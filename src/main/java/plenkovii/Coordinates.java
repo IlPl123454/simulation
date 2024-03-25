@@ -12,7 +12,7 @@ public class Coordinates {
         this.y = y;
     }
 
-    public Set<Coordinates> getSurroundCoordinates() {
+    public Set<Coordinates> getSurroundCoordinates(Map map) {
         Set<Coordinates> set = new HashSet<>();
         for (int x = -1; x <= 1; x++) {
             for (int y = -1; y <= 1; y++) {
@@ -20,7 +20,7 @@ public class Coordinates {
 
                 Coordinates newCoordinates = new Coordinates(this.x + x, this.y + y);
                 if ((newCoordinates.x > 0 && newCoordinates.y > 0)
-                        && (newCoordinates.x <= Map.height && newCoordinates.y <= Map.length)) {
+                        && (newCoordinates.x <= map.HEIGHT && newCoordinates.y <= map.LENGTH)) {
                     set.add(newCoordinates);
                 }
             }
@@ -32,13 +32,11 @@ public class Coordinates {
 
     @Override
     public boolean equals(Object o) {
+
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Coordinates that = (Coordinates) o;
-
-        if (x != that.x) return false;
-        return y == that.y;
+        return x == that.x && y == that.y;
     }
 
     @Override

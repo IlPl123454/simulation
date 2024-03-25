@@ -1,85 +1,143 @@
 package plenkovii;
 
+import plenkovii.action.init.*;
 import plenkovii.entity.*;
+import plenkovii.entity.Rock;
+import plenkovii.entity.Tree;
+import plenkovii.entity.immobile.Grass;
+import plenkovii.entity.mobile.Creature;
+import plenkovii.entity.mobile.Herbivore;
+import plenkovii.entity.mobile.Predator;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         Map map = new Map();
         MapConsoleRenderer renderer = new MapConsoleRenderer();
+        Actions action = new Actions();
         Scanner scanner = new Scanner(System.in);
-        Random random = new Random();
-        int x = random.nextInt(Map.height) + 1;
-        int y = random.nextInt(Map.length) + 1;
-
-        map.setEntity(new Herbivore(new Coordinates(1,1)));
-        map.setEntity(new Rock(new Coordinates(1, 3)));
-        map.setRandomEntities();
 
 
-//        map.setRandomEntities();
+//        action.setNewEntitiesAtRandomCoordinate(map, Tree.class, 10);
+//        action.setNewEntitiesAtRandomCoordinate(map, Rock.class, 10);
+//        action.setNewEntitiesAtRandomCoordinate(map, Grass.class, 10);
+//        action.setNewEntitiesAtRandomCoordinate(map, Herbivore.class, 5);
+//        action.setNewEntitiesAtRandomCoordinate(map, Predator.class, 2);
+
+//        map.setEntity(new Herbivore(new Coordinates(1,1)));
+//        map.setEntity(new Predator(new Coordinates(10,10)));
+
+        GrassGenerateAction grassGenerateAction = new GrassGenerateAction();
+        grassGenerateAction.perform(map, Grass.class);
+
+        EntityGenerateAction entityGenerator = new EntityGenerateAction();
+        entityGenerator.perform(map, Grass.class);
+        entityGenerator.perform(map, Tree.class);
+        entityGenerator.perform(map, Rock.class);
+        entityGenerator.perform(map, Herbivore.class);
+        entityGenerator.perform(map, Predator.class);
+
 
         String input;
+        int num = 1;
 
         while (true) {
-            Set<Coordinates> coordinates = new HashSet<>();
-            ArrayList<Move> moves = new ArrayList<>();
-            System.out.println("1");
-            renderer.render(map);
+            ArrayList<Coordinates> coordinatesWithCreatures = new ArrayList<>();
+//            renderer.render(map);
+            Set<Coordinates> pathCoordinatesHerbivore = new HashSet<>();
+            Set<Coordinates> pathCoordinatesPredator = new HashSet<>();
 
-            for (Entity entity : map.entities.values()) {
-                if (entity.getClass() == Herbivore.class) {
-                    Deque<PathNode> path = ((Herbivore)entity).findPath(map, Grass.class);
-                    if (path != null) {
-                        for (PathNode node : path) {
-                            coordinates.add(node.getCoordinates());
-                        }
-                        Move move = new Move((Creature) entity, path);
-                        moves.add(move);
-                    } else {
-                        System.out.println("Не могу найти путь к траве..");
-                        System.exit(0);
+            for (Entity entity : map.getEntities().values()) {
+                if (entity.getClass() == Predator.class || entity.getClass() == Herbivore.class) {
+                    coordinatesWithCreatures.add(entity.coordinates);
+                }
+            }
+
+            for (Coordinates coordinatesWithCreature : coordinatesWithCreatures) {
+                Creature creature = (Creature) map.getEntity(coordinatesWithCreature);
+                creature.decreaseHP(2);
+                if (creature.getHP() == 0) {
+                    creature.removeIfDead(map);
+                    System.out.println("Животное умерло от голода или его убили");
+                    continue;
+                }
+                if (creature.getClass() == Predator.class) {
+                    pathCoordinatesPredator.add(creature.coordinates);
+                    Deque<PathNode> path = creature.findPathAStar(map, Herbivore.class);
+
+                    if (path == null) {
+                        continue;
+                    }
+                    if (!path.isEmpty()) {
+                        creature.moveCreature(map, path);
+                    }
+                    creature.interact(map);
+
+                    for (PathNode node : path) {
+                        pathCoordinatesPredator.add(node.coordinates);
                     }
 
-                    Coordinates nearCoordinateWithGrass = ((Herbivore) entity).getNearCoordinateWithGrass(map);
-                    if (nearCoordinateWithGrass != null) {
-                        moves.add(new Move((Creature) entity, nearCoordinateWithGrass));
+                } else if (creature.getClass() == Herbivore.class) {
+                    pathCoordinatesHerbivore.add(creature.coordinates);
+                    Deque<PathNode> path = creature.findPathAStar(map, Grass.class);
+
+                    if (path == null) {
+                        continue;
+                    }
+                    if (!path.isEmpty()) {
+                        creature.moveCreature(map, path);
+                    }
+                    creature.interact(map);
+
+                    for (PathNode node : path) {
+                        pathCoordinatesHerbivore.add(node.coordinates);
                     }
                 }
             }
-            System.out.println("2");
-            renderer.renderPath(map,coordinates);
+            renderer.renderPath(map, pathCoordinatesPredator, pathCoordinatesHerbivore);
 
-            if (!moves.isEmpty()) {
-                for (Move move : moves) {
-                    if (move.path != null) {
-                        ((Creature)move.creature).makeMove(map, move.path);
-                    } else if (move.coordinates != null) {
-                        ((Creature)move.creature).makeMove(map, move.coordinates);
-                    }
-                }
-            }
-            int i = 0;
-            for (Entity entity : map.entities.values()) {
+
+            int grass = 0;
+            int herbivore = 0;
+            int predator = 0;
+            for (Entity entity : map.getEntities().values()) {
                 if (entity instanceof Grass) {
-                    i++;
+                    grass++;
+                } else if (entity instanceof Herbivore) {
+                    herbivore++;
+                } else if (entity instanceof Predator) {
+                    predator++;
                 }
             }
-            if (i == 0) {
-                map.setNewEntitiesAtRandomCoordinate(Grass.class, 2);
+            System.out.println(num);
+            num++;
+
+            if (grass < 5) {
+                action.setNewEntitiesAtRandomCoordinate(map, Grass.class, 5);
             }
-
-            System.out.println("Начать новый цикл?");
-            do {
-                System.out.print("Введите Y или N: ");
-                input = scanner.nextLine().toLowerCase();
-
-            } while (!input.equals("y") && !input.equals("n"));
-
-            if (input.equals("n")) {
+            if (herbivore == 0) {
+                System.out.println("Все травоядные погибли");
                 break;
+//                action.setNewEntitiesAtRandomCoordinate(map, Herbivore.class, 2);
             }
+            if (predator == 0) {
+                System.out.println("Все хищники погибли от голода");
+                break;
+//                action.setNewEntitiesAtRandomCoordinate(map, Predator.class, 2);
+            }
+
+//            System.out.println("Начать новый цикл?");
+//            do {
+//                System.out.print("Введите Y или N: ");
+//                input = scanner.nextLine().toLowerCase();
+//
+//            } while (!input.equals("y") && !input.equals("n"));
+//
+//            if (input.equals("n")) {
+//                break;
+//            }
         }
     }
 }

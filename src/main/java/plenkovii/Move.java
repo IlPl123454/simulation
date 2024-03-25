@@ -1,10 +1,10 @@
 package plenkovii;
 
-import plenkovii.entity.Creature;
-import plenkovii.entity.Entity;
+
+
+import plenkovii.entity.mobile.Creature;
 
 import java.util.Deque;
-import java.util.Queue;
 
 public class Move {
     public Creature creature;

@@ -1,9 +1,12 @@
 package plenkovii;
 
 
-import plenkovii.entity.*;
+import plenkovii.entity.Rock;
+import plenkovii.entity.Tree;
+import plenkovii.entity.immobile.Grass;
+import plenkovii.entity.mobile.Herbivore;
+import plenkovii.entity.mobile.Predator;
 
-import java.util.Queue;
 import java.util.Set;
 
 public class MapConsoleRenderer {
@@ -20,7 +23,7 @@ public class MapConsoleRenderer {
 
 
     public void render(Map map) {
-        for (int x = 0; x <= Map.height + 1; x++) {
+        for (int x = 0; x <= map.HEIGHT + 1; x++) {
 
             if (x != 1) {
                 System.out.print(EMOJI_WALL);
@@ -30,14 +33,14 @@ public class MapConsoleRenderer {
             }
 
 
-            for (int y = 1; y <= Map.length; y++) {
+            for (int y = 1; y <= map.LENGTH; y++) {
 
-                if (x == 0 || x == Map.height + 1) {
+                if (x == 0 || x == map.HEIGHT + 1) {
                     System.out.print(EMOJI_WALL);
                     continue;
                 }
                     Coordinates coordinates = new Coordinates(x, y);
-                if (!map.entities.containsKey(coordinates)) {
+                if (!map.getEntities().containsKey(coordinates)) {
                     System.out.print(EMOJI_EMPTY_FIELD);
                 } else {
                     printSprite(map, coordinates);
@@ -47,8 +50,8 @@ public class MapConsoleRenderer {
         }
     }
 
-    public void renderPath(Map map, Set<Coordinates> path) {
-        for (int x = 0; x <= Map.height + 1; x++) {
+    public void renderPath(Map map, Set<Coordinates> path1, Set<Coordinates> path2) {
+        for (int x = 0; x <= map.HEIGHT + 1; x++) {
 
             if (x != 1) {
                 System.out.print(EMOJI_WALL);
@@ -57,20 +60,20 @@ public class MapConsoleRenderer {
 
             }
 
-            for (int y = 1; y <= Map.length; y++) {
+            for (int y = 1; y <= map.LENGTH; y++) {
 
-                if (x == 0 || x == Map.height + 1) {
+                if (x == 0 || x == map.HEIGHT + 1) {
                     System.out.print(EMOJI_WALL);
                     continue;
                 }
                 Coordinates coordinates = new Coordinates(x, y);
-                if (!map.entities.containsKey(coordinates)) {
-                    if (path.contains(coordinates)) {
+                if (!map.getEntities().containsKey(coordinates)) {
+                    if (path1.contains(coordinates)) {
                         System.out.print("\uD83D\uDFE7");
-
+                    } else if (path2.contains(coordinates)) {
+                        System.out.print("\uD83D\uDFE9");
                     } else {
                         System.out.print(EMOJI_EMPTY_FIELD);
-
                     }
                 } else {
                     printSprite(map, coordinates);
@@ -82,15 +85,15 @@ public class MapConsoleRenderer {
 
 
     private static void printSprite(Map map, Coordinates coordinates) {
-        if (map.entities.get(coordinates) instanceof Tree) {
+        if (map.getEntities().get(coordinates) instanceof Tree) {
             System.out.print(EMOJI_TREE);
-        } else if (map.entities.get(coordinates) instanceof Grass) {
+        } else if (map.getEntities().get(coordinates) instanceof Grass) {
             System.out.print(EMOJI_GRASS);
-        } else if (map.entities.get(coordinates) instanceof Rock) {
+        } else if (map.getEntities().get(coordinates) instanceof Rock) {
             System.out.print(EMOJI_ROCK);
-        } else if (map.entities.get(coordinates) instanceof Herbivore) {
+        } else if (map.getEntities().get(coordinates) instanceof Herbivore) {
             System.out.print(EMOJI_HERBIVORE);
-        } else if (map.entities.get(coordinates) instanceof Predator) {
+        } else if (map.getEntities().get(coordinates) instanceof Predator) {
             System.out.print(EMOJI_PREDATOR);
         }
 
