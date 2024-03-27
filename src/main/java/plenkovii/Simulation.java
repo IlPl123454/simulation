@@ -9,13 +9,16 @@ import plenkovii.entity.mobile.Herbivore;
 import plenkovii.entity.mobile.Predator;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Scanner;
 
 public class Simulation {
     private Map map = new Map();
     private MapConsoleRenderer renderer = new MapConsoleRenderer();
     private EntityGenerateAction entityGenerator = new EntityGenerateAction();
     private MoveAction moveAction = new MoveAction();
-    private int moveCount = 0;
+
+    private Scanner scanner = new Scanner(System.in);
+    private int moveCount = 1;
 
 
     public void initSimulation() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
@@ -26,8 +29,15 @@ public class Simulation {
         entityGenerator.perform(map, Predator.class);
     }
 
+    public void nextTurn() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        printMoveCount();
+        creaturesMove();
+        renderMap();
+        generateNewGrass();
+    }
 
-    public void nextTurn(Map map) {
+
+    public void creaturesMove() {
         moveAction.perform(map);
         map.updateMapData();
         moveCount++;
@@ -42,7 +52,42 @@ public class Simulation {
     }
 
     public void printMoveCount() {
-        System.out.println(moveCount);
+        System.out.println("Ход симуляции - " + moveCount);
+    }
+
+    public void renderMap() {
+        renderer.render(map);
+    }
+
+    public boolean isSimulationStopped() {
+        return map.getNumberOfEntityOnMapByClass(Herbivore.class) == 0
+                || map.getNumberOfEntityOnMapByClass(Predator.class) == 0;
+    }
+
+    public void printResult() {
+        System.out.println("Симуляция закончена");
+        if (map.getNumberOfEntityOnMapByClass(Herbivore.class) == 0) {
+            System.out.println("Все травоядные были съедены или погибки от голода");
+        }
+        if (map.getNumberOfEntityOnMapByClass(Predator.class) == 0) {
+            System.out.println("Все хищники погибли от голода");
+        }
+    }
+
+    public void chooseSimulationType() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        String input;
+        do {
+            System.out.print("Введите 1 для симуляции одного хода или 2 для запуска цикла симуляции: ");
+            input = scanner.next();
+
+            if (input.charAt(0) == '1') {
+                nextTurn();
+            } else if (input.charAt(0) != '2') {
+                chooseSimulationType();
+            }
+        } while (input.charAt(0) != '2');
+
+
     }
 
 }
