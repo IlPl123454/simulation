@@ -14,6 +14,7 @@ public class Main {
         while (!simulation.isSimulationStopped()) {
             simulation.nextTurn();
         }
+
         simulation.printResult();
     }
 }

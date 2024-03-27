@@ -1,0 +1,29 @@
+[33mcommit bf0127d0265bfc72f69116819f4ede9f63a54846[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;32mmaster[m[33m, [m[1;32mdef[m[33m)[m
+Author: Ilya <ilplenkov@mail.ru>
+Date:   Wed Mar 27 20:38:48 2024 +0500
+
+    first working version
+
+[33mcommit 6e897b0826671a2e256845affd3ea7bed86fc4a9[m
+Author: Ilya <ilplenkov@mail.ru>
+Date:   Wed Mar 27 20:18:00 2024 +0500
+
+    working version, almost everything is done
+
+[33mcommit a3fc0d3d96855741d24754487b78ef2307f213c5[m
+Author: Ilya <ilplenkov@mail.ru>
+Date:   Wed Mar 27 14:04:35 2024 +0500
+
+    added Simulation methodth, its all work in Main without simulation
+
+[33mcommit 586e5928fb189894b1974511890569d157f6a144[m
+Author: Ilya <ilplenkov@mail.ru>
+Date:   Mon Mar 25 20:43:14 2024 +0500
+
+    25.03.2024
+
+[33mcommit 5d36f6c0089821a37f01e15ebad19f1d47ef29d3[m
+Author: Ilya <ilplenkov@mail.ru>
+Date:   Fri Mar 1 11:43:51 2024 +0600
+
+    commit at 01.03.2024 morning
