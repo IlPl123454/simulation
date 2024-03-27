@@ -10,10 +10,14 @@ public class MoveAction extends Action {
 
     @Override
     public void perform(Map map, Class<? extends Entity> targetClass) {
+        perform(map);
+    }
+
+    public void perform(Map map) {
         List<Creature> creaturesOnMap = map.getCreaturesOnMap();
 
         for (Creature creature : creaturesOnMap) {
-//            creature.makeMove2();
+            creature.makeMove(map);
         }
     }
 }

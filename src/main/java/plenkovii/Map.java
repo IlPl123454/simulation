@@ -1,6 +1,6 @@
 package plenkovii;
 
-import plenkovii.entity.*;
+import plenkovii.entity.Entity;
 import plenkovii.entity.Rock;
 import plenkovii.entity.Tree;
 import plenkovii.entity.immobile.Grass;
@@ -8,28 +8,26 @@ import plenkovii.entity.mobile.Creature;
 import plenkovii.entity.mobile.Herbivore;
 import plenkovii.entity.mobile.Predator;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
 public class Map {
-    public  final int HEIGHT = 10;
-    public  final int LENGTH = 15;
-    public  final double GRASS_SPAWN_RATE = 0.2;
-    public  final double TREE_SPAWN_RATE = 0.1;
-    public  final double ROCK_SPAWN_RATE = 0.1;
-    public  final double HERBIVORE_SPAWN_RATE = 0.1;
-    public  final double PREDATOR_SPAWN_RATE = 0.02;
-
+    public final int HEIGHT = 10;
+    public final int LENGTH = 20;
+    public final double GRASS_SPAWN_RATE = 0.1;
+    public final double TREE_SPAWN_RATE = 0.05;
+    public final double ROCK_SPAWN_RATE = 0.05;
+    public final double HERBIVORE_SPAWN_RATE = 0.05;
+    public final double PREDATOR_SPAWN_RATE = 0.02;
+    private final List<Creature> creaturesOnMap = new ArrayList<>();
+    private final HashMap<Coordinates, Entity> entities = new HashMap<Coordinates, Entity>();
     private int grassCounter;
     private int treeCounter;
     private int rockCounter;
     private int herbivoreCounter;
     private int predatorCounter;
-    private List<Creature> creaturesOnMap;
-
-    private HashMap<Coordinates, Entity> entities = new HashMap<Coordinates, Entity>();
-
 
     public HashMap<Coordinates, Entity> getEntities() {
         return entities;
@@ -49,9 +47,13 @@ public class Map {
 
     public void moveCreature(Coordinates from, Coordinates to) {
         Entity entity = getEntity(from);
-
         entities.remove(from);
-        entities.put(to,entity);
+        entities.put(to, entity);
+
+    }
+
+    public void deleteEntity(Coordinates coordinates) {
+        entities.remove(coordinates);
     }
 
     public double getSpawnRateByClass(Class<? extends Entity> targetClass) {
@@ -88,7 +90,7 @@ public class Map {
         Random random = new Random();
         Coordinates coordinates;
         do {
-            coordinates = new Coordinates(1 + random.nextInt(HEIGHT), 1 +random.nextInt(LENGTH));
+            coordinates = new Coordinates(1 + random.nextInt(HEIGHT), 1 + random.nextInt(LENGTH));
         } while (entities.containsKey(coordinates));
         return coordinates;
     }
@@ -107,6 +109,9 @@ public class Map {
         clearData();
 
         for (Entity entity : entities.values()) {
+            if (entity == null) {
+                int x = 123;
+            }
             increaseCounter(entity);
 
             if (Herbivore.class.equals(entity.getClass())) {

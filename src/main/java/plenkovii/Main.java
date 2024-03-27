@@ -56,77 +56,79 @@ public class Main {
             }
 
             for (Coordinates coordinatesWithCreature : coordinatesWithCreatures) {
+
                 Creature creature = (Creature) map.getEntity(coordinatesWithCreature);
-                creature.decreaseHP(2);
-                if (creature.getHP() == 0) {
-                    creature.removeIfDead(map);
-                    System.out.println("Животное умерло от голода или его убили");
-                    continue;
-                }
-                if (creature.getClass() == Predator.class) {
-                    pathCoordinatesPredator.add(creature.coordinates);
-                    Deque<PathNode> path = creature.findPathAStar(map, Herbivore.class);
+                creature.makeMove(map);
 
-                    if (path == null) {
-                        continue;
-                    }
-                    if (!path.isEmpty()) {
-                        creature.moveCreature(map, path);
-                    }
-                    creature.interact(map);
-
-                    for (PathNode node : path) {
-                        pathCoordinatesPredator.add(node.coordinates);
-                    }
-
-                } else if (creature.getClass() == Herbivore.class) {
-                    pathCoordinatesHerbivore.add(creature.coordinates);
-                    Deque<PathNode> path = creature.findPathAStar(map, Grass.class);
-
-                    if (path == null) {
-                        continue;
-                    }
-                    if (!path.isEmpty()) {
-                        creature.moveCreature(map, path);
-                    }
-                    creature.interact(map);
-
-                    for (PathNode node : path) {
-                        pathCoordinatesHerbivore.add(node.coordinates);
-                    }
-                }
             }
+            map.updateMapData();
+
+//            for (Coordinates coordinatesWithCreature : coordinatesWithCreatures) {
+//                Creature creature = (Creature) map.getEntity(coordinatesWithCreature);
+//                creature.decreaseHP(2);
+//                if (creature.getHP() == 0) {
+//                    creature.removeIfDead(map);
+//                    System.out.println("Животное умерло от голода или его убили");
+//                    continue;
+//                }
+//                if (creature.getClass() == Predator.class) {
+//                    pathCoordinatesPredator.add(creature.coordinates);
+//                    Deque<PathNode> path = creature.findPathAStar(map, Herbivore.class);
+//
+//                    if (path == null) {
+//                        continue;
+//                    }
+//                    if (!path.isEmpty()) {
+//                        creature.moveCreature(map, path);
+//                    }
+//                    creature.interact(map);
+//
+//                    for (PathNode node : path) {
+//                        pathCoordinatesPredator.add(node.coordinates);
+//                    }
+//
+//                } else if (creature.getClass() == Herbivore.class) {
+//                    pathCoordinatesHerbivore.add(creature.coordinates);
+//                    Deque<PathNode> path = creature.findPathAStar(map, Grass.class);
+//
+//                    if (path == null) {
+//                        continue;
+//                    }
+//                    if (!path.isEmpty()) {
+//                        creature.moveCreature(map, path);
+//                    }
+//                    creature.interact(map);
+//
+//                    for (PathNode node : path) {
+//                        pathCoordinatesHerbivore.add(node.coordinates);
+//                    }
+//                }
+//            }
+
             renderer.renderPath(map, pathCoordinatesPredator, pathCoordinatesHerbivore);
 
 
-            int grass = 0;
-            int herbivore = 0;
-            int predator = 0;
-            for (Entity entity : map.getEntities().values()) {
-                if (entity instanceof Grass) {
-                    grass++;
-                } else if (entity instanceof Herbivore) {
-                    herbivore++;
-                } else if (entity instanceof Predator) {
-                    predator++;
-                }
-            }
+
             System.out.println(num);
+            System.out.println("Grass - " + map.getNumberOfEntityOnMapByClass(Grass.class));
             num++;
 
-            if (grass < 5) {
-                action.setNewEntitiesAtRandomCoordinate(map, Grass.class, 5);
+            if (map.getNumberOfEntityOnMapByClass(Grass.class) < 5) {
+                entityGenerator.perform(map, Grass.class);
+
             }
-            if (herbivore == 0) {
+            if (map.getNumberOfEntityOnMapByClass(Herbivore.class) == 0) {
                 System.out.println("Все травоядные погибли");
                 break;
 //                action.setNewEntitiesAtRandomCoordinate(map, Herbivore.class, 2);
             }
-            if (predator == 0) {
+            if (map.getNumberOfEntityOnMapByClass(Predator.class) == 0) {
                 System.out.println("Все хищники погибли от голода");
                 break;
 //                action.setNewEntitiesAtRandomCoordinate(map, Predator.class, 2);
             }
+
+
 
 //            System.out.println("Начать новый цикл?");
 //            do {
@@ -138,6 +140,7 @@ public class Main {
 //            if (input.equals("n")) {
 //                break;
 //            }
+
         }
     }
 }

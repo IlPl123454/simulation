@@ -6,12 +6,13 @@ import plenkovii.PathNode;
 import plenkovii.Search;
 import plenkovii.entity.Entity;
 
-import java.util.*;
+import java.util.Deque;
+import java.util.Set;
 
 public abstract class Creature extends Entity {
     public final int SPEED = 20;
-    private int HP = 50;
     public final int MAX_HP = 50;
+    private int HP = 50;
 
     public Creature(Coordinates coordinates) {
         super(coordinates);
@@ -31,10 +32,8 @@ public abstract class Creature extends Entity {
         }
     }
 
-    public void removeIfDead(Map map) {
-        if (HP == 0) {
-            map.getEntities().remove(this.coordinates);
-        }
+    public boolean isCreatureDead(Map map) {
+        return HP == 0;
     }
 
     public int getHP() {
@@ -49,6 +48,9 @@ public abstract class Creature extends Entity {
     }
 
     public void moveCreature(Map map, Deque<PathNode> path) {
+        if (path == null) {
+            return;
+        }
         if (!path.isEmpty()) {
             Coordinates from = this.coordinates;
             Coordinates to;
@@ -58,6 +60,9 @@ public abstract class Creature extends Entity {
                 } else {
                     path.pollFirst();
                 }
+            }
+            if (path.getFirst() == null) {
+                return;
             }
             to = path.pollFirst().coordinates;
             map.moveCreature(from, to);
@@ -69,7 +74,10 @@ public abstract class Creature extends Entity {
         // decrease HP
         this.decreaseHP(2);
         // check if dead
-        this.removeIfDead(map);
+        if (this.isCreatureDead(map)) {
+            map.deleteEntity(this.coordinates);
+            return;
+        }
         // find path to goal
         Deque<PathNode> path = this.findPathAStar(map, getTargetEntity());
         // move creature
