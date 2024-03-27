@@ -29,7 +29,6 @@ public class Coordinates {
     }
 
 
-
     @Override
     public boolean equals(Object o) {
 

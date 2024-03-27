@@ -19,27 +19,34 @@ public class MapConsoleRenderer {
     public static final String EMOJI_WALL = "\uD83E\uDDF1";
     public static final String EMOJI_BARRIER = "\uD83E\uDE9C";
 
-
-
+    private static void printSprite(Map map, Coordinates coordinates) {
+        if (map.getEntities().get(coordinates) instanceof Tree) {
+            System.out.print(EMOJI_TREE);
+        } else if (map.getEntities().get(coordinates) instanceof Grass) {
+            System.out.print(EMOJI_GRASS);
+        } else if (map.getEntities().get(coordinates) instanceof Rock) {
+            System.out.print(EMOJI_ROCK);
+        } else if (map.getEntities().get(coordinates) instanceof Herbivore) {
+            System.out.print(EMOJI_HERBIVORE);
+        } else if (map.getEntities().get(coordinates) instanceof Predator) {
+            System.out.print(EMOJI_PREDATOR);
+        }
+    }
 
     public void render(Map map) {
         for (int x = 0; x <= map.HEIGHT + 1; x++) {
-
             if (x != 1) {
                 System.out.print(EMOJI_WALL);
             } else {
                 System.out.print(EMOJI_BARRIER);
-
             }
-
-
             for (int y = 1; y <= map.LENGTH; y++) {
 
                 if (x == 0 || x == map.HEIGHT + 1) {
                     System.out.print(EMOJI_WALL);
                     continue;
                 }
-                    Coordinates coordinates = new Coordinates(x, y);
+                Coordinates coordinates = new Coordinates(x, y);
                 if (!map.getEntities().containsKey(coordinates)) {
                     System.out.print(EMOJI_EMPTY_FIELD);
                 } else {
@@ -57,9 +64,7 @@ public class MapConsoleRenderer {
                 System.out.print(EMOJI_WALL);
             } else {
                 System.out.print(EMOJI_BARRIER);
-
             }
-
             for (int y = 1; y <= map.LENGTH; y++) {
 
                 if (x == 0 || x == map.HEIGHT + 1) {
@@ -81,21 +86,5 @@ public class MapConsoleRenderer {
             }
             System.out.println(EMOJI_WALL + x);
         }
-    }
-
-
-    private static void printSprite(Map map, Coordinates coordinates) {
-        if (map.getEntities().get(coordinates) instanceof Tree) {
-            System.out.print(EMOJI_TREE);
-        } else if (map.getEntities().get(coordinates) instanceof Grass) {
-            System.out.print(EMOJI_GRASS);
-        } else if (map.getEntities().get(coordinates) instanceof Rock) {
-            System.out.print(EMOJI_ROCK);
-        } else if (map.getEntities().get(coordinates) instanceof Herbivore) {
-            System.out.print(EMOJI_HERBIVORE);
-        } else if (map.getEntities().get(coordinates) instanceof Predator) {
-            System.out.print(EMOJI_PREDATOR);
-        }
-
     }
 }

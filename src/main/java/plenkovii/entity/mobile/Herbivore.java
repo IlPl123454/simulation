@@ -7,6 +7,7 @@ import plenkovii.entity.immobile.Grass;
 
 public class Herbivore extends Creature {
     public final int HP_FOR_EATING_GRASS = 20;
+
     public Herbivore(Coordinates coordinates) {
         super(coordinates);
     }
